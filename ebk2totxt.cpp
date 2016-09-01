@@ -28,7 +28,11 @@ class BytesToStruct
 
 class CATHYEBK_MEDIA_DATA_T
 {
-
+    public:
+        int media_type;
+        int offset;
+        int data_offset;
+        int length;
 };
 
 

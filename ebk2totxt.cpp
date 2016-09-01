@@ -41,7 +41,10 @@ class ChapterCompress
 
 class ChapterStruct
 {
-
+    public:
+        char chapter_name[64];
+        int offset;
+        int length;
 };
 
 

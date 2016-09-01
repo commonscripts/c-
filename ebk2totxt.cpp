@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <list>
 
 using namespace std;
 
@@ -53,8 +54,23 @@ class Ebk2Open
 
 class Model
 {
+    public:
+        int CATHY_LZ77_WINDOW_SIZE;
+        list<string> correctchapterlist;
+        char bookbuf[1048576];
+        int CATHYEBK_CHAPTER_NAME_MAX_SIZE;
+        int CATHYEBK_TXT_FILE_MAX_SIZE;
+        int CATHYEBK_VERSION;
+        int CATHYEBK_NAME_MAX_SIZE;
 
-
+        Model()
+        {
+            this->CATHY_LZ77_WINDOW_SIZE = 65536;
+            this->CATHYEBK_CHAPTER_NAME_MAX_SIZE = 64;
+            this->CATHYEBK_TXT_FILE_MAX_SIZE = 10485760;
+            this->CATHYEBK_VERSION = 2;
+            this->CATHYEBK_NAME_MAX_SIZE = 64;
+        }
 };
 
 

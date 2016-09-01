@@ -14,8 +14,50 @@ class BookInfo
 
 class BookItems
 {
+    private:
+        string name;
+        int index;
+        int length;
 
+    public:
+        void setName(string name)
+        {
+            this->name = name;
+        }
+        string getName()
+        {
+            return this->name;
+        }
 
+        void setIndex(int index)
+        {
+            this->index = index;
+        }
+        int getIndex()
+        {
+            return this->index;
+        }
+
+        void setLength(int length)
+        {
+            this->length = length;
+        }
+        int getLength()
+        {
+            return this->length;
+        }
+
+        BookItems()
+        {
+            this->name = "";
+        }
+        
+        BookItems(string name, int index, int length)
+        {
+            this->name = name;
+            this->index = index;
+            this->length = length;
+        }
 };
 
 

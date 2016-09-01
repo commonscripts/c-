@@ -34,8 +34,9 @@ class CATHYEBK_MEDIA_DATA_T
 
 class ChapterCompress
 {
-
-
+    public:
+        int offset;
+        int length;
 };
 
 

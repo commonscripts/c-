@@ -5,13 +5,6 @@
 using namespace std;
 
 
-class BookInfo
-{
-
-
-};
-
-
 class BookItems
 {
     private:
@@ -57,6 +50,40 @@ class BookItems
             this->name = name;
             this->index = index;
             this->length = length;
+        }
+};
+
+
+class BookInfo
+{
+    private:
+        list<BookItems> chapterlist;
+        string text;
+        char pic[1048576];
+        string bookname;
+
+    public:
+        void setText(string text)
+        {
+            this->text = text;
+        }
+        string getText()
+        {
+            return this->text;
+        }
+
+        void setBookname(string bookname)
+        {
+            this->bookname = bookname;
+        }
+        string getBookname()
+        {
+            return this->bookname;
+        }
+
+        BookInfo()
+        {
+            this->text = "";
         }
 };
 

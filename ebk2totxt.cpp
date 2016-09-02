@@ -245,17 +245,25 @@ int main(int argc, char * argv[])
 {
     char       *file_path;
     long        file_size;
-    char        buffer[1048576];    
+    char       *buffer; 
+    streampos   pos;
 
     file_path = argv[1];
     file_size = 0;
-    memset(buffer, 0, sizeof(buffer));
+    pos = 0;
 
     ifstream fin;
     fin.open(file_path, ios::in|ios::binary);
-    fin.read(buffer, sizeof(buffer));
 
-    //file_size = strlen(buffer);
+    fin.seekg(0, ios::end);
+    pos = fin.tellg();
+    file_size = pos;
+    fin.seekg(0, ios::beg);
+    
+    buffer = new char[file_size];
+    memset(buffer, 0, file_size);
+        
+    fin.read(buffer, file_size);
 
     return 0;
 }

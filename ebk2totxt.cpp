@@ -101,7 +101,7 @@ class BookInfo
 class BytesToStruct
 {
     public:
-        static int copyMove(void *dst, void *src, size_t n)
+        static void copyMove(void *dst, void *src, size_t n)
         {
             if(dst)
             {
@@ -235,8 +235,46 @@ class TextStruct
             this->compress_block_count = 0;
             this->media_count = 0;
             this->media_data_length = 0;
+            this->txt_compress_size = 0;
 
             memset(this->book_name, 0, sizeof(this->book_name));
+        }
+
+        TextStruct(char * buffer)
+        {
+            char *p = buffer;
+
+            //BytesToStruct.copyMove(&(this->book_id), p, 4);
+            //BytesToStruct.copyMove(&(this->head_data_size), p, 2); 
+            //BytesToStruct.copyMove(&(this->ebk_version), p, 2);
+            //BytesToStruct.copyMove(&(this->ebk_size), p, 4);
+            //BytesToStruct.copyMove(&(this->book_name), p, 64);
+            //BytesToStruct.copyMove(&(this->file_size), p, 4);
+            //BytesToStruct.copyMove(&(this->head_compress_size), p, 4);
+            //BytesToStruct.copyMove(&(this->first_compress_block_size), p, 4);
+            //BytesToStruct.copyMove(&(this->chapter_count), p, 2);
+            //BytesToStruct.copyMove(&(this->compress_block_count), p, 2);
+            //BytesToStruct.copyMove(&(this->media_count), p, 4);
+            //BytesToStruct.copyMove(&(this->media_data_length), p, 4);
+            //BytesToStruct.copyMove(&(this->txt_compress_size), p, 4);
+        }
+
+        void displayHead()
+        {
+            cout<<"book info:"<<endl;
+            cout<<"book_id: "<<this->book_id<<endl;
+            cout<<"head_data_size: "<<this->head_data_size<<endl;
+            cout<<"ebk_version: "<<this->ebk_version<<endl;
+            cout<<"ebk_size: "<<this->ebk_size<<endl;
+            cout<<"book_name: "<<this->book_name<<endl;
+            cout<<"file_size: "<<this->file_size<<endl;
+            cout<<"head_compress_size: "<<this->head_compress_size<<endl;
+            cout<<"first_compress_block_size: "<<this->first_compress_block_size<<endl;
+            cout<<"chapter_count: "<<this->chapter_count<<endl;
+            cout<<"compress_block_count: "<<this->compress_block_count<<endl;
+            cout<<"media_count: "<<this->media_count<<endl;
+            cout<<"media_data_length: "<<this->media_data_length<<endl;
+            cout<<"txt_compress_size: "<<this->txt_compress_size<<endl;
         }
 };
 
@@ -264,6 +302,10 @@ int main(int argc, char * argv[])
     memset(buffer, 0, file_size);
         
     fin.read(buffer, file_size);
+
+    TextStruct tst(buffer);
+    tst.displayHead();
+
 
     return 0;
 }

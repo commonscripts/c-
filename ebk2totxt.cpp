@@ -101,13 +101,17 @@ class BookInfo
 class BytesToStruct
 {
     public:
-        static void copyMove(void *dst, void *src, size_t n)
+        static void copyMove(void *dst, void **src, size_t n)
         {
             if(dst)
             {
-                memcpy(dst, src, n);
+                memcpy(dst, *src, n);
 
-                src = (char *)src + n;
+                //*(char *)src = (void *)((char *)src + n);
+                //*(char *)src += n;
+                //(char*)(*src) += 4;
+                //(char **)src += n;
+                (char **)src = (char **)src + n;
             }
         }
 
@@ -242,21 +246,21 @@ class TextStruct
 
         TextStruct(char * buffer)
         {
-            char *p = buffer;
+            char **p = &buffer;
 
-            //BytesToStruct.copyMove(&(this->book_id), p, 4);
-            //BytesToStruct.copyMove(&(this->head_data_size), p, 2); 
-            //BytesToStruct.copyMove(&(this->ebk_version), p, 2);
-            //BytesToStruct.copyMove(&(this->ebk_size), p, 4);
-            //BytesToStruct.copyMove(&(this->book_name), p, 64);
-            //BytesToStruct.copyMove(&(this->file_size), p, 4);
-            //BytesToStruct.copyMove(&(this->head_compress_size), p, 4);
-            //BytesToStruct.copyMove(&(this->first_compress_block_size), p, 4);
-            //BytesToStruct.copyMove(&(this->chapter_count), p, 2);
-            //BytesToStruct.copyMove(&(this->compress_block_count), p, 2);
-            //BytesToStruct.copyMove(&(this->media_count), p, 4);
-            //BytesToStruct.copyMove(&(this->media_data_length), p, 4);
-            //BytesToStruct.copyMove(&(this->txt_compress_size), p, 4);
+            BytesToStruct::copyMove(&(this->book_id), (void **)p, 4);
+            BytesToStruct::copyMove(&(this->head_data_size), (void **)p, 2); 
+            BytesToStruct::copyMove(&(this->ebk_version), (void **)p, 2);
+            BytesToStruct::copyMove(&(this->ebk_size), (void **)p, 4);
+            BytesToStruct::copyMove(&(this->book_name), (void **)p, 64);
+            BytesToStruct::copyMove(&(this->file_size), (void **)p, 4);
+            BytesToStruct::copyMove(&(this->head_compress_size), (void **)p, 4);
+            BytesToStruct::copyMove(&(this->first_compress_block_size), (void **)p, 4);
+            BytesToStruct::copyMove(&(this->chapter_count), (void **)p, 2);
+            BytesToStruct::copyMove(&(this->compress_block_count), (void **)p, 2);
+            BytesToStruct::copyMove(&(this->media_count), (void **)p, 4);
+            BytesToStruct::copyMove(&(this->media_data_length), (void **)p, 4);
+            BytesToStruct::copyMove(&(this->txt_compress_size), (void **)p, 4);
         }
 
         void displayHead()

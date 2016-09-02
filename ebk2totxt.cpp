@@ -100,8 +100,31 @@ class BookInfo
 
 class BytesToStruct
 {
+    public:
+        static int copyMove(void *dst, void *src, size_t n)
+        {
+            if(dst)
+            {
+                memcpy(dst, src, n);
 
+                src = (char *)src + n;
+            }
+        }
 
+        static void *bigToLittleEndian(void *dst, const void *src, size_t n)
+        {
+            char *d, *s;
+
+            d = (char *)dst;
+            s = (char *)src + n - 1;
+
+            while(s >= (char *)src)
+            {
+                *d++ = *s--; 
+            }
+        
+            return dst;
+        }
 };
 
 

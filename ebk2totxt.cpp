@@ -1,6 +1,12 @@
 #include <iostream>
+
 #include <string>
 #include <list>
+
+#include <fstream>
+
+#include <string.h>
+
 
 using namespace std;
 
@@ -43,6 +49,8 @@ class BookItems
         BookItems()
         {
             this->name = "";
+            this->index = 0;
+            this->length = 0;
         }
         
         BookItems(string name, int index, int length)
@@ -84,6 +92,8 @@ class BookInfo
         BookInfo()
         {
             this->text = "";
+            this->bookname = "";
+            memset(this->pic, 0, sizeof(this->pic));
         }
 };
 
@@ -102,6 +112,14 @@ class CATHYEBK_MEDIA_DATA_T
         int offset;
         int data_offset;
         int length;
+
+        CATHYEBK_MEDIA_DATA_T()
+        {
+            this->media_type = 0;
+            this->offset = 0;
+            this->data_offset = 0;
+            this->length = 0;
+        }
 };
 
 
@@ -110,6 +128,12 @@ class ChapterCompress
     public:
         int offset;
         int length;
+
+        ChapterCompress()
+        {
+            this->offset = 0;
+            this->length = 0;
+        }
 };
 
 
@@ -119,6 +143,11 @@ class ChapterStruct
         char chapter_name[64];
         int offset;
         int length;
+
+        ChapterStruct()
+        {
+            memset(this->chapter_name, 0 , sizeof(this->chapter_name));
+        }
 };
 
 
@@ -147,6 +176,8 @@ class Model
             this->CATHYEBK_TXT_FILE_MAX_SIZE = 10485760;
             this->CATHYEBK_VERSION = 2;
             this->CATHYEBK_NAME_MAX_SIZE = 64;
+
+            memset(this->bookbuf, 0 , sizeof(this->bookbuf));
         }
 };
 
@@ -167,12 +198,41 @@ class TextStruct
         int media_count;
         int media_data_length;
         int txt_compress_size;
+
+        TextStruct()
+        {
+            this->book_id = 0;
+            this->head_data_size = 0;
+            this->ebk_version = 0;
+            this->ebk_size = 0;
+            this->file_size = 0;
+            this->head_compress_size = 0;
+            this->first_compress_block_size = 0;
+            this->chapter_count = 0;
+            this->compress_block_count = 0;
+            this->media_count = 0;
+            this->media_data_length = 0;
+
+            memset(this->book_name, 0, sizeof(this->book_name));
+        }
 };
 
 
 int main(int argc, char * argv[])
 {
+    char       *file_path;
+    long        file_size;
+    char        buffer[1048576];    
 
+    file_path = argv[1];
+    file_size = 0;
+    memset(buffer, 0, sizeof(buffer));
+
+    ifstream fin;
+    fin.open(file_path, ios::in|ios::binary);
+    fin.read(buffer, sizeof(buffer));
+
+    //file_size = strlen(buffer);
 
     return 0;
 }

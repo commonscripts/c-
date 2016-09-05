@@ -3,6 +3,8 @@
 #include <list>
 #include <cstring>
 #include <cassert>
+#include <cerrno>
+#include <cstdlib>
 #include <iconv.h>
 
 using namespace std;
@@ -134,16 +136,32 @@ class BytesToStruct
         }
 
         static void *codeConvert(const char *from_charset, const char *to_charset,
-                                 char *in, int inlen, char *out, int outlen)
+                                 char *in, size_t inlen, char *out, size_t outlen)
         {
+            assert(from_charset && to_charset && in && out);
+
+            int rc;
             iconv_t cd;
             char **pin = &in;
             char **pout = &out;
 
             cd = iconv_open(to_charset, from_charset);
+            if(cd == (iconv_t)-1)
+            {
+                cout<<"get error cd: "<<cd<<endl;
+                exit(-1);
+            }
+                
             memset(out, 0, outlen);
 
-            iconv(cd, pin, (size_t *)&inlen, pout, (size_t *)&outlen);
+            rc = iconv(cd, pin, &inlen, pout, &outlen);
+            if(rc == -1)
+            {
+                cout<<"convert faild!"<<endl;
+                exit(-1);
+            }    
+                
+            iconv_close(cd);
         }
 };
 
@@ -244,7 +262,7 @@ class TextStruct
         int media_data_length;
         int txt_compress_size;
 
-        char book_name_utf8[192];
+        char book_name_utf8[256];
 
         void initTextStruct()
         {
@@ -289,6 +307,8 @@ class TextStruct
             BytesToStruct::copyMove(&media_count, p, 4);
             BytesToStruct::copyMove(&media_data_length, p, 4);
             BytesToStruct::copyMove(&txt_compress_size, p, 4);
+
+            BytesToStruct::codeConvert("UTF16LE", "UTF8", book_name, (size_t)(strlen(book_name)), book_name_utf8, (size_t)(sizeof(book_name_utf8)));
         }
 
         void displayHead()
@@ -298,8 +318,6 @@ class TextStruct
             cout<<"head_data_size: "<<head_data_size<<endl;
             cout<<"ebk_version: "<<ebk_version<<endl;
             cout<<"ebk_size: "<<ebk_size<<endl;
-
-            BytesToStruct::codeConvert("UTF−16LE", "UTF−8", book_name, strlen(book_name), book_name_utf8, sizeof(book_name_utf8));
             cout<<"book_name: "<<book_name_utf8<<endl;
             cout<<"file_size: "<<file_size<<endl;
             cout<<"head_compress_size: "<<head_compress_size<<endl;
@@ -339,6 +357,7 @@ int main(int argc, char * argv[])
     memset(buffer, 0, file_size);
         
     fin.read(buffer, file_size);
+    fin.close();
 
     TextStruct tst(buffer);
     tst.displayHead();

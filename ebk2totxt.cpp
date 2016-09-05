@@ -5,6 +5,7 @@
 #include <cassert>
 #include <cstdlib>
 #include <iconv.h>
+#include <zlib.h>
 
 using namespace std;
 
@@ -162,6 +163,45 @@ class BytesToStruct
                 
             iconv_close(cd);
         }
+ 
+        static void unCompress(const char *src, long src_len, char *dst)
+        {
+            int   rc;
+            long  dst_len;
+
+            dst = NULL;
+            dst_len = compressBound(src_len);
+            dst = (char *)malloc(dst_len);
+            if(dst = NULL)
+            {
+                cout<<"no enough memory!"<<endl;
+            }
+
+            memset(dst, 0, dst_len);
+
+            rc = uncompress((Bytef *)dst, (uLongf *)&dst_len, (Bytef *)src, (uLong)src_len);
+            if(rc != Z_OK)
+            {
+                cout<<"uncompress failed!"<<endl;
+                exit(-1);
+            }
+        }
+//int uncompress(Bytef *dest, uLongf *destLen, const Bytef *source, uLong sourceLen);
+//ebk2totxt.cpp:174: 错误：从类型‘void*’到类型‘char*’的转换无效
+//ebk2totxt.cpp:182: 错误：从类型‘const char*’到类型‘Bytef*’的转换无效
+//ebk2totxt.cpp:182: 错误：  初始化‘int uncompress(Bytef*, uLongf*, const Bytef*, uLong)’的实参 1
+//ebk2totxt.cpp:182: 错误：从类型‘long int’到类型‘uLongf*’的转换无效
+//ebk2totxt.cpp:182: 错误：  初始化‘int uncompress(Bytef*, uLongf*, const Bytef*, uLong)’的实参 2
+//ebk2totxt.cpp:182: 错误：从类型‘char*’到类型‘const Bytef*’的转换无效
+//ebk2totxt.cpp:182: 错误：  初始化‘int uncompress(Bytef*, uLongf*, const Bytef*, uLong)’的实参 3
+//ebk2totxt.cpp: In function ‘int main(int, char**)’:
+//        ebk2totxt.cpp:388: 错误：对‘ChapterCompress::ChapterCompress(int, int&)’的调用没有匹配的函数
+//        ebk2totxt.cpp:216: 附注：备选为： ChapterCompress::ChapterCompress()
+//        ebk2totxt.cpp:211: 附注：         ChapterCompress::ChapterCompress(const ChapterCompress&)
+
+
+
+
 };
 
 
@@ -193,6 +233,12 @@ class ChapterCompress
         {
             offset = 0;
             length = 0;
+        }
+
+        ChapterCompress(int offset, int length)
+        {
+            this->offset = offset;
+            this->length = length;
         }
 };
 
@@ -334,7 +380,7 @@ int main(int argc, char * argv[])
 {
     char       *file_path;
     long        file_size;
-    char       *buffer; 
+    char       *buffer, *uncompressed_chapter; 
     streampos   posStart, posEnd;
 
     file_path = argv[1];
@@ -360,6 +406,9 @@ int main(int argc, char * argv[])
 
     TextStruct tst(buffer);
     tst.displayHead();
+
+    ChapterCompress chaptercompress(144, tst.head_compress_size);
+    BytesToStruct::unCompress(buffer + chaptercompress.offset, chaptercompress.length, uncompressed_chapter);
 
 
     return 0;

@@ -2,6 +2,7 @@
 
 #include <string>
 #include <list>
+#include <cassert>
 
 #include <fstream>
 
@@ -46,11 +47,16 @@ class BookItems
             return this->length;
         }
 
+        void initBookItems()
+        {
+            name = "";
+            index = 0;
+            length = 0;
+        }
+
         BookItems()
         {
-            this->name = "";
-            this->index = 0;
-            this->length = 0;
+            initBookItems();
         }
         
         BookItems(string name, int index, int length)
@@ -89,11 +95,16 @@ class BookInfo
             return this->bookname;
         }
 
+        void initBookInfo()
+        {
+            text = "";
+            bookname = "";
+            memset(pic, 0, sizeof(pic));
+        }
+
         BookInfo()
         {
-            this->text = "";
-            this->bookname = "";
-            memset(this->pic, 0, sizeof(this->pic));
+            initBookInfo();
         }
 };
 
@@ -101,18 +112,12 @@ class BookInfo
 class BytesToStruct
 {
     public:
-        static void copyMove(void *dst, void **src, size_t n)
+        static void copyMove(void *dst, char **src, size_t n)
         {
-            if(dst)
-            {
-                memcpy(dst, *src, n);
+            assert(dst != NULL or src != NULL or *src != NULL);
 
-                //*(char *)src = (void *)((char *)src + n);
-                //*(char *)src += n;
-                //(char*)(*src) += 4;
-                //(char **)src += n;
-                (char **)src = (char **)src + n;
-            }
+            memcpy(dst, *src, n);
+            *src += n;
         }
 
         static void *bigToLittleEndian(void *dst, const void *src, size_t n)
@@ -142,10 +147,10 @@ class CATHYEBK_MEDIA_DATA_T
 
         CATHYEBK_MEDIA_DATA_T()
         {
-            this->media_type = 0;
-            this->offset = 0;
-            this->data_offset = 0;
-            this->length = 0;
+            media_type = 0;
+            offset = 0;
+            data_offset = 0;
+            length = 0;
         }
 };
 
@@ -158,8 +163,8 @@ class ChapterCompress
 
         ChapterCompress()
         {
-            this->offset = 0;
-            this->length = 0;
+            offset = 0;
+            length = 0;
         }
 };
 
@@ -173,7 +178,9 @@ class ChapterStruct
 
         ChapterStruct()
         {
-            memset(this->chapter_name, 0 , sizeof(this->chapter_name));
+            offset = 0;
+            length = 0;
+            memset(chapter_name, 0 , sizeof(chapter_name));
         }
 };
 
@@ -198,13 +205,13 @@ class Model
 
         Model()
         {
-            this->CATHY_LZ77_WINDOW_SIZE = 65536;
-            this->CATHYEBK_CHAPTER_NAME_MAX_SIZE = 64;
-            this->CATHYEBK_TXT_FILE_MAX_SIZE = 10485760;
-            this->CATHYEBK_VERSION = 2;
-            this->CATHYEBK_NAME_MAX_SIZE = 64;
+            CATHY_LZ77_WINDOW_SIZE = 65536;
+            CATHYEBK_CHAPTER_NAME_MAX_SIZE = 64;
+            CATHYEBK_TXT_FILE_MAX_SIZE = 10485760;
+            CATHYEBK_VERSION = 2;
+            CATHYEBK_NAME_MAX_SIZE = 64;
 
-            memset(this->bookbuf, 0 , sizeof(this->bookbuf));
+            memset(bookbuf, 0 , sizeof(bookbuf));
         }
 };
 
@@ -226,59 +233,66 @@ class TextStruct
         int media_data_length;
         int txt_compress_size;
 
+        void initTextStruct()
+        {
+            book_id = 0;
+            head_data_size = 0;
+            ebk_version = 0;
+            ebk_size = 0;
+            file_size = 0;
+            head_compress_size = 0;
+            first_compress_block_size = 0;
+            chapter_count = 0;
+            compress_block_count = 0;
+            media_count = 0;
+            media_data_length = 0;
+            txt_compress_size = 0;
+
+            memset(book_name, 0, sizeof(book_name));
+        }
+
         TextStruct()
         {
-            this->book_id = 0;
-            this->head_data_size = 0;
-            this->ebk_version = 0;
-            this->ebk_size = 0;
-            this->file_size = 0;
-            this->head_compress_size = 0;
-            this->first_compress_block_size = 0;
-            this->chapter_count = 0;
-            this->compress_block_count = 0;
-            this->media_count = 0;
-            this->media_data_length = 0;
-            this->txt_compress_size = 0;
-
-            memset(this->book_name, 0, sizeof(this->book_name));
+            initTextStruct();
         }
 
         TextStruct(char * buffer)
         {
             char **p = &buffer;
 
-            BytesToStruct::copyMove(&(this->book_id), (void **)p, 4);
-            BytesToStruct::copyMove(&(this->head_data_size), (void **)p, 2); 
-            BytesToStruct::copyMove(&(this->ebk_version), (void **)p, 2);
-            BytesToStruct::copyMove(&(this->ebk_size), (void **)p, 4);
-            BytesToStruct::copyMove(&(this->book_name), (void **)p, 64);
-            BytesToStruct::copyMove(&(this->file_size), (void **)p, 4);
-            BytesToStruct::copyMove(&(this->head_compress_size), (void **)p, 4);
-            BytesToStruct::copyMove(&(this->first_compress_block_size), (void **)p, 4);
-            BytesToStruct::copyMove(&(this->chapter_count), (void **)p, 2);
-            BytesToStruct::copyMove(&(this->compress_block_count), (void **)p, 2);
-            BytesToStruct::copyMove(&(this->media_count), (void **)p, 4);
-            BytesToStruct::copyMove(&(this->media_data_length), (void **)p, 4);
-            BytesToStruct::copyMove(&(this->txt_compress_size), (void **)p, 4);
+            initTextStruct();
+
+            BytesToStruct::copyMove(&book_id, p, 4);
+            BytesToStruct::copyMove(&head_data_size, p, 2); 
+            BytesToStruct::copyMove(&ebk_version, p, 2);
+            BytesToStruct::copyMove(&ebk_size, p, 4);
+            BytesToStruct::copyMove(&book_name, p, 64);
+            BytesToStruct::copyMove(&file_size, p, 4);
+            BytesToStruct::copyMove(&head_compress_size, p, 4);
+            BytesToStruct::copyMove(&first_compress_block_size, p, 4);
+            BytesToStruct::copyMove(&chapter_count, p, 2);
+            BytesToStruct::copyMove(&compress_block_count, p, 2);
+            BytesToStruct::copyMove(&media_count, p, 4);
+            BytesToStruct::copyMove(&media_data_length, p, 4);
+            BytesToStruct::copyMove(&txt_compress_size, p, 4);
         }
 
         void displayHead()
         {
             cout<<"book info:"<<endl;
-            cout<<"book_id: "<<this->book_id<<endl;
-            cout<<"head_data_size: "<<this->head_data_size<<endl;
-            cout<<"ebk_version: "<<this->ebk_version<<endl;
-            cout<<"ebk_size: "<<this->ebk_size<<endl;
-            cout<<"book_name: "<<this->book_name<<endl;
-            cout<<"file_size: "<<this->file_size<<endl;
-            cout<<"head_compress_size: "<<this->head_compress_size<<endl;
-            cout<<"first_compress_block_size: "<<this->first_compress_block_size<<endl;
-            cout<<"chapter_count: "<<this->chapter_count<<endl;
-            cout<<"compress_block_count: "<<this->compress_block_count<<endl;
-            cout<<"media_count: "<<this->media_count<<endl;
-            cout<<"media_data_length: "<<this->media_data_length<<endl;
-            cout<<"txt_compress_size: "<<this->txt_compress_size<<endl;
+            cout<<"book_id: "<<book_id<<endl;
+            cout<<"head_data_size: "<<head_data_size<<endl;
+            cout<<"ebk_version: "<<ebk_version<<endl;
+            cout<<"ebk_size: "<<ebk_size<<endl;
+            cout<<"book_name: "<<book_name<<endl;
+            cout<<"file_size: "<<file_size<<endl;
+            cout<<"head_compress_size: "<<head_compress_size<<endl;
+            cout<<"first_compress_block_size: "<<first_compress_block_size<<endl;
+            cout<<"chapter_count: "<<chapter_count<<endl;
+            cout<<"compress_block_count: "<<compress_block_count<<endl;
+            cout<<"media_count: "<<media_count<<endl;
+            cout<<"media_data_length: "<<media_data_length<<endl;
+            cout<<"txt_compress_size: "<<txt_compress_size<<endl;
         }
 };
 

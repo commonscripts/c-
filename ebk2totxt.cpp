@@ -1,12 +1,9 @@
 #include <iostream>
-
-#include <string>
-#include <cstring>
-#include <list>
-#include <cassert>
-
 #include <fstream>
-
+#include <list>
+#include <cstring>
+#include <cassert>
+#include <iconv.h>
 
 using namespace std;
 
@@ -113,7 +110,7 @@ class BytesToStruct
     public:
         static void copyMove(void *dst, char **src, size_t n)
         {
-            assert(dst != NULL or src != NULL or *src != NULL);
+            assert(dst != NULL and src != NULL and *src != NULL);
 
             memcpy(dst, *src, n);
             *src += n;
@@ -122,6 +119,8 @@ class BytesToStruct
         static void *bigToLittleEndian(void *dst, const void *src, size_t n)
         {
             char *d, *s;
+
+            assert(dst != NULL and src != NULL);
 
             d = (char *)dst;
             s = (char *)src + n - 1;
@@ -132,6 +131,19 @@ class BytesToStruct
             }
         
             return dst;
+        }
+
+        static void *codeConvert(const char *from_charset, const char *to_charset,
+                                 char *in, int inlen, char *out, int outlen)
+        {
+            iconv_t cd;
+            char **pin = &in;
+            char **pout = &out;
+
+            cd = iconv_open(to_charset, from_charset);
+            memset(out, 0, outlen);
+
+            iconv(cd, pin, (size_t *)&inlen, pout, (size_t *)&outlen);
         }
 };
 
@@ -232,6 +244,8 @@ class TextStruct
         int media_data_length;
         int txt_compress_size;
 
+        char book_name_utf8[192];
+
         void initTextStruct()
         {
             book_id = 0;
@@ -248,6 +262,7 @@ class TextStruct
             txt_compress_size = 0;
 
             memset(book_name, 0, sizeof(book_name));
+            memset(book_name_utf8, 0, sizeof(book_name_utf8));
         }
 
         TextStruct()
@@ -283,7 +298,9 @@ class TextStruct
             cout<<"head_data_size: "<<head_data_size<<endl;
             cout<<"ebk_version: "<<ebk_version<<endl;
             cout<<"ebk_size: "<<ebk_size<<endl;
-            cout<<"book_name: "<<book_name<<endl;
+
+            BytesToStruct::codeConvert("UTF−16LE", "UTF−8", book_name, strlen(book_name), book_name_utf8, sizeof(book_name_utf8));
+            cout<<"book_name: "<<book_name_utf8<<endl;
             cout<<"file_size: "<<file_size<<endl;
             cout<<"head_compress_size: "<<head_compress_size<<endl;
             cout<<"first_compress_block_size: "<<first_compress_block_size<<endl;
@@ -301,20 +318,23 @@ int main(int argc, char * argv[])
     char       *file_path;
     long        file_size;
     char       *buffer; 
-    streampos   pos;
+    streampos   posStart, posEnd;
 
     file_path = argv[1];
     file_size = 0;
-    pos = 0;
+    posStart = 0;
+    posEnd = 0;
 
+    assert(file_path);
     ifstream fin;
     fin.open(file_path, ios::in|ios::binary);
 
     fin.seekg(0, ios::end);
-    pos = fin.tellg();
-    file_size = pos;
+    posEnd = fin.tellg();
     fin.seekg(0, ios::beg);
-    
+    posStart = fin.tellg();
+
+    file_size = posEnd - posStart;
     buffer = new char[file_size];
     memset(buffer, 0, file_size);
         

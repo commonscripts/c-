@@ -1,12 +1,11 @@
 #include <iostream>
 
 #include <string>
+#include <cstring>
 #include <list>
 #include <cassert>
 
 #include <fstream>
-
-#include <string.h>
 
 
 using namespace std;

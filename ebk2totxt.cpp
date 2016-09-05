@@ -3,7 +3,6 @@
 #include <list>
 #include <cstring>
 #include <cassert>
-#include <cerrno>
 #include <cstdlib>
 #include <iconv.h>
 

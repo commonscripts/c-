@@ -149,7 +149,7 @@ class BytesToStruct
             if(cd == (iconv_t)-1)
             {
                 cout<<"get error cd: "<<cd<<endl;
-                exit(-1);
+                exit(EXIT_FAILURE);
             }
                 
             memset(out, 0, outlen);
@@ -158,7 +158,7 @@ class BytesToStruct
             if(rc == -1)
             {
                 cout<<"convert faild!"<<endl;
-                exit(-1);
+                exit(EXIT_FAILURE);
             }    
                 
             iconv_close(cd);
@@ -183,25 +183,9 @@ class BytesToStruct
             if(rc != Z_OK)
             {
                 cout<<"uncompress failed!"<<endl;
-                exit(-1);
+                exit(EXIT_FAILURE);
             }
         }
-//int uncompress(Bytef *dest, uLongf *destLen, const Bytef *source, uLong sourceLen);
-//ebk2totxt.cpp:174: 错误：从类型‘void*’到类型‘char*’的转换无效
-//ebk2totxt.cpp:182: 错误：从类型‘const char*’到类型‘Bytef*’的转换无效
-//ebk2totxt.cpp:182: 错误：  初始化‘int uncompress(Bytef*, uLongf*, const Bytef*, uLong)’的实参 1
-//ebk2totxt.cpp:182: 错误：从类型‘long int’到类型‘uLongf*’的转换无效
-//ebk2totxt.cpp:182: 错误：  初始化‘int uncompress(Bytef*, uLongf*, const Bytef*, uLong)’的实参 2
-//ebk2totxt.cpp:182: 错误：从类型‘char*’到类型‘const Bytef*’的转换无效
-//ebk2totxt.cpp:182: 错误：  初始化‘int uncompress(Bytef*, uLongf*, const Bytef*, uLong)’的实参 3
-//ebk2totxt.cpp: In function ‘int main(int, char**)’:
-//        ebk2totxt.cpp:388: 错误：对‘ChapterCompress::ChapterCompress(int, int&)’的调用没有匹配的函数
-//        ebk2totxt.cpp:216: 附注：备选为： ChapterCompress::ChapterCompress()
-//        ebk2totxt.cpp:211: 附注：         ChapterCompress::ChapterCompress(const ChapterCompress&)
-
-
-
-
 };
 
 
@@ -408,10 +392,10 @@ int main(int argc, char * argv[])
     tst.displayHead();
 
     ChapterCompress chaptercompress(144, tst.head_compress_size);
-    BytesToStruct::unCompress(buffer + chaptercompress.offset, chaptercompress.length, uncompressed_chapter);
+    //BytesToStruct::unCompress(buffer + chaptercompress.offset, chaptercompress.length, uncompressed_chapter);
 
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 

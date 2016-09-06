@@ -10,6 +10,9 @@
 using namespace std;
 
 
+const int TEMP_BUF_SIZE = 1 * 1048576;
+const int MAX_PATH_SIZE = 64;
+
 class BookItems
 {
     private:
@@ -71,7 +74,7 @@ class BookInfo
     private:
         list<BookItems> chapterlist;
         string text;
-        char pic[1048576];
+        char pic[TEMP_BUF_SIZE];
         string bookname;
 
     public:
@@ -164,22 +167,20 @@ class BytesToStruct
             iconv_close(cd);
         }
  
-        static void unCompress(const char *src, long src_len, char *dst)
+        static void unCompress(const char *src, int src_len, char *dst, int *uncompr_size)
         {
-            int   rc;
-            long  dst_len;
+            int    rc;
 
             dst = NULL;
-            dst_len = compressBound(src_len);
-            dst = (char *)malloc(dst_len);
-            if(dst = NULL)
+            dst = (char *)malloc(TEMP_BUF_SIZE);
+            if(dst == NULL)
             {
                 cout<<"no enough memory!"<<endl;
             }
 
-            memset(dst, 0, dst_len);
+            memset(dst, 0, TEMP_BUF_SIZE);
 
-            rc = uncompress((Bytef *)dst, (uLongf *)&dst_len, (Bytef *)src, (uLong)src_len);
+            rc = uncompress((Bytef *)dst, (uLongf *)uncompr_size, (const Bytef *)src, (uLong)src_len);
             if(rc != Z_OK)
             {
                 cout<<"uncompress failed!"<<endl;
@@ -230,7 +231,7 @@ class ChapterCompress
 class ChapterStruct
 {
     public:
-        char chapter_name[64];
+        char chapter_name[MAX_PATH_SIZE];
         int offset;
         int length;
 
@@ -255,7 +256,7 @@ class Model
     public:
         int CATHY_LZ77_WINDOW_SIZE;
         list<string> correctchapterlist;
-        char bookbuf[1048576];
+        char bookbuf[TEMP_BUF_SIZE];
         int CATHYEBK_CHAPTER_NAME_MAX_SIZE;
         int CATHYEBK_TXT_FILE_MAX_SIZE;
         int CATHYEBK_VERSION;
@@ -281,7 +282,7 @@ class TextStruct
         int head_data_size;
         int ebk_version;
         int ebk_size;
-        char book_name[64];
+        char book_name[MAX_PATH_SIZE];
         int file_size;
         int head_compress_size;
         int first_compress_block_size;
@@ -291,7 +292,7 @@ class TextStruct
         int media_data_length;
         int txt_compress_size;
 
-        char book_name_utf8[256];
+        char book_name_utf8[3 * MAX_PATH_SIZE];
 
         void initTextStruct()
         {
@@ -364,6 +365,7 @@ int main(int argc, char * argv[])
 {
     char       *file_path;
     long        file_size;
+    int         uncompressed_data_size;
     char       *buffer, *uncompressed_chapter; 
     streampos   posStart, posEnd;
 
@@ -372,8 +374,10 @@ int main(int argc, char * argv[])
     posStart = 0;
     posEnd = 0;
 
+    uncompressed_data_size = TEMP_BUF_SIZE;
+
     assert(file_path);
-    ifstream fin;
+    fstream fin;
     fin.open(file_path, ios::in|ios::binary);
 
     fin.seekg(0, ios::end);
@@ -391,9 +395,12 @@ int main(int argc, char * argv[])
     TextStruct tst(buffer);
     tst.displayHead();
 
-    ChapterCompress chaptercompress(144, tst.head_compress_size);
-    //BytesToStruct::unCompress(buffer + chaptercompress.offset, chaptercompress.length, uncompressed_chapter);
+    ChapterCompress chaptercompress(104, tst.head_compress_size);
+    BytesToStruct::unCompress((const char *)(buffer + chaptercompress.offset), chaptercompress.length, uncompressed_chapter, &uncompressed_data_size);
 
+    fin.open("uncompressed_file.txt", ios::out|ios::binary);
+    fin.write(uncompressed_chapter, uncompressed_data_size);
+    fin.close();
 
     return EXIT_SUCCESS;
 }

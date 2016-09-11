@@ -52,7 +52,6 @@ namespace ebk2totxt_v1_hjf
         ebk2totxt_v1_hjf::CommonTools::codeConvert("UTF16LE", "UTF8",
                                                    book_name, (size_t)(strlen(book_name)),
                                                    book_name_utf8, (size_t)(sizeof(book_name_utf8)));
-          
     }
 
     int Ebk2FileHeader::getBook_id()

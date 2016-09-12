@@ -7,6 +7,7 @@
 
 #include <string.h>
 #include "Ebk2FileHeader.h"
+#include "Chapters.h"
 #include "CommonTools.h"
 #include "zlib.h"
 
@@ -290,13 +291,13 @@ using namespace ebk2totxt_v1_hjf;
 
 int main(int argc, char * argv[])
 {
-    char       *file_path;
-    long        file_size;
-    char       *buffer; 
-    streampos   pos;
+    const char       *file_path;
+    long              file_size;
+    char             *buffer; 
+    streampos         pos;
 
-    file_path = "c:\\chaoyuepingyong.ebk2";
-    //file_path = argv[1];
+    //file_path = "c:\\chaoyuepingyong.ebk2";
+    file_path = argv[1];
     file_size = 0;
     pos = 0;
  
@@ -315,7 +316,9 @@ int main(int argc, char * argv[])
 
     Ebk2FileHeader file_header(buffer);
     file_header.displayEbk2FileHeader(false);
-    
+   
+    Chapters chps(file_header.getHead_data_size(), file_header.getHead_compress_size(), file_header.getChapter_count(), buffer);
+    chps.displayChapters();
     //TextStruct tst(buffer);
     //tst.displayHead();
 

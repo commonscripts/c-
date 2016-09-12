@@ -1,3 +1,4 @@
+#include <cstring>
 #include <cassert>
 #include "Ebk2FileHeader.h"
 
@@ -142,4 +143,5 @@ namespace ebk2totxt_v1_hjf
     
     }
 }
- 
+
+

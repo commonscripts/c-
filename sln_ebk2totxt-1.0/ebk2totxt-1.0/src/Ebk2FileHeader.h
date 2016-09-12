@@ -52,5 +52,6 @@ namespace ebk2totxt_v1_hjf
     };
 }
 
-#endif __EBK2FILEHEADER_H__
+#endif
+
 

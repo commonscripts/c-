@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cassert>
-#include <string.h>
+#include <cstring>
 #include <iconv.h>
 #include <cstdlib>
 #include "CommonTools.h"
@@ -36,14 +36,14 @@ namespace ebk2totxt_v1_hjf
     }
 
     void *CommonTools::codeConvert(const char *from_charset, const char *to_charset,
-                                   const char *in, size_t inlen, char *out, size_t outlen)
+                                   char *in, size_t inlen, char *out, size_t outlen)
     {
         assert(from_charset && to_charset && in && out);
 
         int             rc; 
         iconv_t         cd;
         char          **pout = &out;
-        const char    **pin = &in;      
+        char          **pin = &in;      
 
         cd = iconv_open(to_charset, from_charset);
         if(cd == (iconv_t)-1)
@@ -85,4 +85,5 @@ namespace ebk2totxt_v1_hjf
         }
     }
 }
+
 

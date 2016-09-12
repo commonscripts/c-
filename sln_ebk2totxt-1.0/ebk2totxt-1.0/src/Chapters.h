@@ -52,15 +52,15 @@ namespace ebk2totxt_v1_hjf
     class Chapters
     {
         private:
-            int offset, length, chapter_count;
             const char *buf;
-            int uncompr_chr_data_size;
-            char *uncompr_chr_data = NULL;
-            CompressChapter comprchr = CompressChapter(offset, length, chapter_count);
+
+            int    uncompr_chr_data_size;
+            char  *uncompr_chr_data;
+            
             list<UnCompressChapter> uncomprchrlist;
 
-            void uncompressCompressChapters();
-            bool addUnCompressChapter();
+            void uncompressCompressChapters(const char *buf, int offset, int length);
+            bool addUnCompressChapter(int chapter_count);
             
         public:
             Chapters();
@@ -73,4 +73,5 @@ namespace ebk2totxt_v1_hjf
 }
 
 #endif
+
 

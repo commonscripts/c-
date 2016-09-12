@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstring>
 #include "Ebk2Limits.h"
 #include "Chapters.h"
 #include "CommonTools.h"
@@ -98,30 +99,30 @@ namespace ebk2totxt_v1_hjf
 
     Chapters::Chapters(int offset, int length, int chapter_count, const char *buf)
     {
-        this->offset = offset;
-        this->length = length;
-        this->chapter_count = chapter_count;
         this->buf = buf;
         this->uncompr_chr_data_size = 0;
         this->uncompr_chr_data = new char[TEMP_BUFFER_SIZE];
 
-        uncompressCompressChapters();
-        addUnCompressChapter();
+        CompressChapter comprchr(offset, length, chapter_count);
+
+        uncompressCompressChapters(this->buf, offset, length);
+        addUnCompressChapter(chapter_count);
     }
 
-    void Chapters::uncompressCompressChapters()
+    void Chapters::uncompressCompressChapters(const char *buf, int offset, int length)
     {   
         ebk2totxt_v1_hjf::CommonTools::unCompress((const char *)(buf + offset), length,
                                                   uncompr_chr_data, &uncompr_chr_data_size);
     }
 
-    bool Chapters::addUnCompressChapter()
+    bool Chapters::addUnCompressChapter(int chapter_count)
     {
         int i;
         char *p = uncompr_chr_data;
         for(i = 0; i < chapter_count; i++)
         {
-            UnCompressChapter uncomprchr("adf", 1, 1);
+            //UnCompressChapter uncomprchr("adf", 1, 1);
+            UnCompressChapter uncomprchr;
             
             uncomprchrlist.push_back(uncomprchr);                
         }               
@@ -147,4 +148,5 @@ namespace ebk2totxt_v1_hjf
         delete(uncompr_chr_data);
     }
 }
+
 
